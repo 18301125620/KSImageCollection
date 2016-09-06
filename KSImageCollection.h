@@ -11,6 +11,7 @@
 @class KSImageCollection;
 @protocol KSImageCollectionDelegate <NSObject>
 
+@optional
 - (void)ks_imageCollection:(KSImageCollection*)imageCollection WillDeleteImage:(id)imageObj atIndex:(NSUInteger)index;
 - (void)ks_imageCollection:(KSImageCollection*)imageCollection DidSelectImage:(id)imageObj atIndex:(NSUInteger)index;
 - (void)ks_imageCollection:(KSImageCollection*)imageCollection ShouldAddImageAtIndex:(NSUInteger)index;
@@ -24,34 +25,37 @@
 
 /** 是否不可编辑 删除、添加图片 默认NO */
 @property (nonatomic,assign) IBInspectable BOOL Uneditable;
-
+/** 最大图片张数 */
+@property (nonatomic,assign) IBInspectable NSUInteger maxCount;
+/** 代理对象*/
 @property (nonatomic,assign) id<KSImageCollectionDelegate> target;
 
-/**
- *  通过modelArray 添加图片
- *
- *  @param array    仅支持一层model
- *  @param property 图片url的属性值
- */
+/** 添加一个图片数组，类型可以为自定义类型，需要指定Image的属性*/
 - (void)addImageModelArray:(NSArray*)array property:(NSString*)property;
-
+/** 添加一个图片，类型可以为UImage,NSString*/
 - (void)addImage:(id)image;
-
+/** 添加一个图片数组，类型可以为UImage,NSString*/
 - (void)addImageArray:(NSArray *)array;
 
+/** 指定位置插入一个图片数组，类型可以为自定义类型，需要指定Image的属性*/
+- (void)insertImageModelArray:(NSArray*)array property:(NSString*)property atIndex:(NSUInteger)index;
+/** 指定位置插入一个图片，类型可以为UImage,NSString*/
+- (void)insertImage:(id)image atIndex:(NSUInteger)index;
+/** 指定位置插入一个图片数组，类型可以为UImage,NSString*/
+- (void)insertImageArray:(NSArray *)array atIndex:(NSUInteger)index;
+
+/** 删除所有图片*/
 - (void)removeAllImages;
 
 @end
 
-/**
- *  慎用通知
- */
+/** 慎用通知 */
 extern NSString* const KSImageCollectionWillDeleteImageNotifition;
 extern NSString* const KSImageCollectionDidSelectImageNotifition;
 extern NSString* const KSImageCollectionShouldAddImageNotifition;
 
-/**
- *  上传图片按钮背景
- */
-static NSString* const KSImageCollectAdd = @"KSImageCollectAdd";
 
+/** 上传图片按钮背景图片名字 */
+static NSString* const KSImageCollectAdd = @"KSImageCollectAdd";
+/** 删除图片按钮图片名字 */
+static NSString* const KSImageCollectRemove = @"KSImageCollectRemove";

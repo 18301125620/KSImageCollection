@@ -9,7 +9,7 @@
 #import "KSImageCollection.h"
 #import <UIImageView+WebCache.h>
 
-#define MAX_COUNT (9)
+//#define MAX_COUNT (9)
 #define ITEM_SIZE (CGSizeMake(self.bounds.size.height - .5,self.bounds.size.height - .5))
 
 /***********************************************************************************************
@@ -75,15 +75,13 @@
     flow.itemSize = ITEM_SIZE;
     
     [self registerClass:[KSImageCollectionCell class] forCellWithReuseIdentifier:@"KSImageCollectionCell"];
-    [self registerClass:[KSImageCollectionFooter class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"KSImageCollectionFooter"];
+    [self registerClass:[KSImageCollectionFooter class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:UICollectionElementKindSectionFooter];
+    [self registerClass:[KSImageCollectionFooter class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:UICollectionElementKindSectionHeader];
     
-    //监听imageArray变化
-
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willDeleteImageNotifition:) name:KSImageCollectionWillDeleteImageNotifition object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(shouldAddImageNotifition:) name:KSImageCollectionShouldAddImageNotifition object:nil];
 
 }
-
 
 #pragma mark- UICollectionViewDelegate
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
@@ -100,20 +98,26 @@
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath{
     
-    if (_imageArray.count >= MAX_COUNT || _Uneditable) {
+    if (_imageArray.count >= _maxCount || _Uneditable) {
         return nil;
     }
     
-    KSImageCollectionFooter* footer = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:@"KSImageCollectionFooter" forIndexPath:indexPath];
+    KSImageCollectionFooter* footer = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:kind forIndexPath:indexPath];
     return footer;
 }
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section{
-    if (_imageArray.count >= MAX_COUNT || _Uneditable) {
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section{
+    if (_imageArray.count >= _maxCount || _Uneditable) {
         return CGSizeZero;
     }
     return ITEM_SIZE;
 }
+
+//- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section{
+//    if (_imageArray.count >= MAX_COUNT || _Uneditable) {
+//        return CGSizeZero;
+//    }
+//    return ITEM_SIZE;
+//}
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     
@@ -146,6 +150,7 @@
     }
 }
 
+
 - (void)addImage:(id)image{
     
     [self.imageArray addObject:image];
@@ -160,17 +165,34 @@
 
 - (void)addImageModelArray:(NSArray *)array property:(NSString *)property{
     
-    dispatch_async(dispatch_queue_create("com.KSImageCollection", DISPATCH_QUEUE_PRIORITY_DEFAULT), ^{
-        
-        NSMutableArray* urls = [NSMutableArray array];
-        [array enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            [urls addObject:[obj valueForKey:property]];
-        }];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self addImageArray:urls];
-        });
-    });
+//    dispatch_async(dispatch_queue_create("com.KSImageCollection", DISPATCH_QUEUE_PRIORITY_DEFAULT), ^{
+//        
+//        NSMutableArray* urls = [NSMutableArray array];
+//        [array enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+//            [urls addObject:[obj valueForKey:property]];
+//        }];
+//        
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            [self addImageArray:urls];
+//        });
+//    });
+    [self addImageArray:[array valueForKeyPath:property]];
+
+}
+
+- (void)insertImage:(id)image atIndex:(NSUInteger)index{
+    [self.imageArray insertObject:image atIndex:index];
+    [self reloadData];
+}
+
+- (void)insertImageArray:(NSArray *)array atIndex:(NSUInteger)index{
+    [self.imageArray insertObjects:array atIndexes:[NSIndexSet indexSetWithIndex:index]];
+    [self reloadData];
+}
+
+- (void)insertImageModelArray:(NSArray *)array property:(NSString *)property atIndex:(NSUInteger)index{
+    [self.imageArray insertObjects:[array valueForKeyPath:property] atIndexes:[NSIndexSet indexSetWithIndex:index]];
+    [self reloadData];
 }
 
 - (void)removeAllImages{
@@ -205,7 +227,7 @@
         UIButton* btn = [UIButton buttonWithType:UIButtonTypeCustom];
         btn.tag = 100;
         btn.frame = CGRectMake(self.bounds.size.width - 15, 0, 15, 15);
-        [btn setBackgroundImage:[UIImage imageNamed:@"Shape"] forState:UIControlStateNormal];
+        [btn setBackgroundImage:[UIImage imageNamed:KSImageCollectRemove] forState:UIControlStateNormal];
         [btn addTarget:self action:@selector(removeImage:) forControlEvents:UIControlEventTouchUpInside];
         [self.contentView addSubview:btn];
 
