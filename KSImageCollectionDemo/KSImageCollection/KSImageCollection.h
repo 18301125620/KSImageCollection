@@ -21,7 +21,7 @@
 @interface KSImageCollection : UICollectionView
 
 /** 支持UIImage,NSString类型 */
-@property (nonatomic,strong,readonly) NSMutableArray* imageArray;
+@property (nonatomic,strong,readonly) NSMutableArray* images;
 
 /** 是否不可编辑 删除、添加图片 默认NO */
 @property (nonatomic,assign) IBInspectable BOOL Uneditable;
@@ -29,6 +29,13 @@
 @property (nonatomic,assign) IBInspectable NSUInteger maxCount;
 /** 代理对象*/
 @property (nonatomic,assign) id<KSImageCollectionDelegate> target;
+
+/** 初始化一个图片数组，类型可以为自定义类型，需要指定Image的属性*/
+- (void)setImageModelArray:(NSArray*)array property:(NSString*)property;
+/** 初始化一个图片，类型可以为UImage,NSString*/
+- (void)setImage:(id)image;
+/** 初始化一个图片数组，类型可以为UImage,NSString*/
+- (void)setImageArray:(NSArray *)array;
 
 /** 添加一个图片数组，类型可以为自定义类型，需要指定Image的属性*/
 - (void)addImageModelArray:(NSArray*)array property:(NSString*)property;
@@ -53,7 +60,6 @@
 extern NSString* const KSImageCollectionWillDeleteImageNotifition;
 extern NSString* const KSImageCollectionDidSelectImageNotifition;
 extern NSString* const KSImageCollectionShouldAddImageNotifition;
-
 
 /** 上传图片按钮背景图片名字 */
 static NSString* const KSImageCollectAdd = @"KSImageCollectAdd";

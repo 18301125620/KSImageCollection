@@ -7,11 +7,14 @@
 //
 
 #import "KSImageCollection.h"
-#import <UIImageView+WebCache.h>
+#import "UIImageView+WebCache.h"
 
-//#define MAX_COUNT (9)
 #define ITEM_SIZE (CGSizeMake(self.bounds.size.height - .5,self.bounds.size.height - .5))
 
+#pragma mark-
+#pragma mark KSImageCollectionFooter
+/***********************************************************************************************
+ *****************************************************************************************************/
 /***********************************************************************************************
  *****************************************************************************************************/
 
@@ -19,12 +22,35 @@
  *  选择图片按钮
  */
 @interface KSImageCollectionFooter : UICollectionReusableView
-
 @end
 
+@implementation KSImageCollectionFooter
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        UIButton* btn = [UIButton buttonWithType:UIButtonTypeCustom];
+        btn.frame = CGRectInset(self.bounds, 5, 5);
+        [btn setBackgroundImage:[UIImage imageNamed:KSImageCollectAdd] forState:UIControlStateNormal];
+        [btn addTarget:self action:@selector(selectImage:) forControlEvents:UIControlEventTouchUpInside];
+        [self addSubview:btn];
+    }
+    return self;
+}
+
+- (void)selectImage:(UIButton*)sender{
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:KSImageCollectionShouldAddImageNotifition object:nil userInfo:nil];
+}
+@end
+
+#pragma mark-
+#pragma mark KSImageCollectionCell
 /***********************************************************************************************
  *****************************************************************************************************/
-
+/***********************************************************************************************
+ *****************************************************************************************************/
 /**
  *  展示图片
  */
@@ -35,181 +61,6 @@
 @property (nonatomic,assign) BOOL Uneditable;
 
 @end
-
-/***********************************************************************************************
- *****************************************************************************************************/
-
-@interface KSImageCollection ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
-
-@end
-
-@implementation KSImageCollection
-
-- (instancetype)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        [self setupSubviews];
-    }
-    return self;
-}
-- (void)awakeFromNib{
-    [self setupSubviews];
-}
-
-- (void)setupSubviews{
-    
-    _imageArray = [[NSMutableArray alloc] init];
-    
-    self.delegate = self;
-    self.dataSource = self;
-    self.showsVerticalScrollIndicator = NO;
-    self.showsHorizontalScrollIndicator = NO;
-    
-    UICollectionViewFlowLayout* flow = [[UICollectionViewFlowLayout alloc] init];
-    flow.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    flow.minimumLineSpacing = 5;
-    flow.sectionInset = UIEdgeInsetsMake(0, 0, 0, 5);
-    self.collectionViewLayout = flow;
-    
-    flow.itemSize = ITEM_SIZE;
-    
-    [self registerClass:[KSImageCollectionCell class] forCellWithReuseIdentifier:@"KSImageCollectionCell"];
-    [self registerClass:[KSImageCollectionFooter class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:UICollectionElementKindSectionFooter];
-    [self registerClass:[KSImageCollectionFooter class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:UICollectionElementKindSectionHeader];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willDeleteImageNotifition:) name:KSImageCollectionWillDeleteImageNotifition object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(shouldAddImageNotifition:) name:KSImageCollectionShouldAddImageNotifition object:nil];
-
-}
-
-#pragma mark- UICollectionViewDelegate
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    return self.imageArray.count;
-}
-
-- (UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-    KSImageCollectionCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"KSImageCollectionCell" forIndexPath:indexPath];
-    
-    cell.imageObject = _imageArray[indexPath.row];
-    cell.Uneditable = _Uneditable;
-    return cell;
-}
-
-- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath{
-    
-    if (_imageArray.count >= _maxCount || _Uneditable) {
-        return nil;
-    }
-    
-    KSImageCollectionFooter* footer = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:kind forIndexPath:indexPath];
-    return footer;
-}
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section{
-    if (_imageArray.count >= _maxCount || _Uneditable) {
-        return CGSizeZero;
-    }
-    return ITEM_SIZE;
-}
-
-//- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section{
-//    if (_imageArray.count >= MAX_COUNT || _Uneditable) {
-//        return CGSizeZero;
-//    }
-//    return ITEM_SIZE;
-//}
-
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    
-    id imageObj = _imageArray[indexPath.row];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:KSImageCollectionDidSelectImageNotifition object:imageObj userInfo:@{@"index":@(indexPath.row)}];
-    
-    if (_target && [_target respondsToSelector:@selector(ks_imageCollection:DidSelectImage:atIndex:)]) {
-        [_target ks_imageCollection:self DidSelectImage:imageObj atIndex:indexPath.row];
-    }
-}
-
-- (void)willDeleteImageNotifition:(NSNotification*)not{
-    
-    NSNumber* index = not.userInfo[@"index"];
-
-    id imageObj = self.imageArray[[index unsignedIntegerValue]];
-    
-    if (_target && [_target respondsToSelector:@selector(ks_imageCollection:WillDeleteImage:atIndex:)]) {
-        [_target ks_imageCollection:self WillDeleteImage:imageObj atIndex:[index unsignedIntegerValue]];
-    }
-    
-    [self.imageArray removeObjectAtIndex:[index integerValue]];
-    [self reloadData];
-}
-
-- (void)shouldAddImageNotifition:(NSNotification*)not{
-    if (_target && [_target respondsToSelector:@selector(ks_imageCollection:ShouldAddImageAtIndex:)]) {
-        [_target ks_imageCollection:self ShouldAddImageAtIndex:self.imageArray.count - 1];
-    }
-}
-
-
-- (void)addImage:(id)image{
-    
-    [self.imageArray addObject:image];
-    [self reloadData];
-    
-}
-
-- (void)addImageArray:(NSArray *)array{
-    [self.imageArray addObjectsFromArray:array];
-    [self reloadData];
-}
-
-- (void)addImageModelArray:(NSArray *)array property:(NSString *)property{
-    
-//    dispatch_async(dispatch_queue_create("com.KSImageCollection", DISPATCH_QUEUE_PRIORITY_DEFAULT), ^{
-//        
-//        NSMutableArray* urls = [NSMutableArray array];
-//        [array enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-//            [urls addObject:[obj valueForKey:property]];
-//        }];
-//        
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            [self addImageArray:urls];
-//        });
-//    });
-    [self addImageArray:[array valueForKeyPath:property]];
-
-}
-
-- (void)insertImage:(id)image atIndex:(NSUInteger)index{
-    [self.imageArray insertObject:image atIndex:index];
-    [self reloadData];
-}
-
-- (void)insertImageArray:(NSArray *)array atIndex:(NSUInteger)index{
-    [self.imageArray insertObjects:array atIndexes:[NSIndexSet indexSetWithIndex:index]];
-    [self reloadData];
-}
-
-- (void)insertImageModelArray:(NSArray *)array property:(NSString *)property atIndex:(NSUInteger)index{
-    [self.imageArray insertObjects:[array valueForKeyPath:property] atIndexes:[NSIndexSet indexSetWithIndex:index]];
-    [self reloadData];
-}
-
-- (void)removeAllImages{
-    [self.imageArray removeAllObjects];
-    [self reloadData];
-}
-
-- (void)dealloc{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-@end
-
-/***********************************************************************************************
- *****************************************************************************************************/
-/***********************************************************************************************
- *****************************************************************************************************/
 
 @implementation KSImageCollectionCell
 
@@ -230,7 +81,7 @@
         [btn setBackgroundImage:[UIImage imageNamed:KSImageCollectRemove] forState:UIControlStateNormal];
         [btn addTarget:self action:@selector(removeImage:) forControlEvents:UIControlEventTouchUpInside];
         [self.contentView addSubview:btn];
-
+        
     }
     return self;
 }
@@ -261,7 +112,7 @@
 - (void)removeImage:(UIButton*)sender{
     
     [[NSNotificationCenter defaultCenter] postNotificationName:KSImageCollectionWillDeleteImageNotifition object:_imageObject userInfo:@{@"index":@(self.indexPath.row)}];
-
+    
 }
 
 - (NSIndexPath*)indexPath{
@@ -276,30 +127,185 @@
 @end
 
 
+
+#pragma mark-
+#pragma mark KSImageCollection
 /***********************************************************************************************
  *****************************************************************************************************/
 /***********************************************************************************************
  *****************************************************************************************************/
 
-@implementation KSImageCollectionFooter
+@interface KSImageCollection ()<UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
+@property (nonatomic, strong) UICollectionViewFlowLayout* layout;
+@end
 
-- (instancetype)initWithFrame:(CGRect)frame
+@implementation KSImageCollection
+
+- (instancetype)init
 {
-    self = [super initWithFrame:frame];
+    self = [super initWithFrame:CGRectZero collectionViewLayout:self.layout];
     if (self) {
-        UIButton* btn = [UIButton buttonWithType:UIButtonTypeCustom];
-        btn.frame = CGRectInset(self.bounds, 5, 5);
-        [btn setBackgroundImage:[UIImage imageNamed:KSImageCollectAdd] forState:UIControlStateNormal];
-        [btn addTarget:self action:@selector(selectImage:) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:btn];
+        [self setupSubviews];
     }
     return self;
 }
 
-- (void)selectImage:(UIButton*)sender{
+- (void)awakeFromNib{
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:KSImageCollectionShouldAddImageNotifition object:nil userInfo:nil];
+    self.collectionViewLayout = self.layout;
+    [self setupSubviews];
+    
 }
+
+- (UICollectionViewFlowLayout*)layout{
+    if (!_layout) {
+        _layout = [[UICollectionViewFlowLayout alloc] init];
+        _layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+        _layout.minimumLineSpacing = 5;
+        _layout.sectionInset = UIEdgeInsetsMake(0, 5, 0, 5);
+    }
+    return _layout;
+}
+
+- (void)setupSubviews{
+    
+    _images = [[NSMutableArray alloc] init];
+    
+    self.backgroundColor = [UIColor whiteColor];
+    self.delegate = self;
+    self.dataSource = self;
+    self.showsVerticalScrollIndicator = NO;
+    self.showsHorizontalScrollIndicator = NO;
+    
+    [self registerClass:[KSImageCollectionCell class] forCellWithReuseIdentifier:@"KSImageCollectionCell"];
+    [self registerClass:[KSImageCollectionFooter class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:UICollectionElementKindSectionFooter];
+    [self registerClass:[KSImageCollectionFooter class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:UICollectionElementKindSectionHeader];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willDeleteImageNotifition:) name:KSImageCollectionWillDeleteImageNotifition object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(shouldAddImageNotifition:) name:KSImageCollectionShouldAddImageNotifition object:nil];
+
+}
+
+#pragma mark- UICollectionViewDelegate
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
+    return self.images.count;
+}
+
+- (UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+    KSImageCollectionCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"KSImageCollectionCell" forIndexPath:indexPath];
+    
+    cell.imageObject = _images[indexPath.row];
+    cell.Uneditable = _Uneditable;
+    return cell;
+}
+
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath{
+    
+    if (_images.count >= _maxCount || _Uneditable) {
+        return nil;
+    }
+    
+    KSImageCollectionFooter* footer = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:kind forIndexPath:indexPath];
+    return footer;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
+    return ITEM_SIZE;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section{
+    if (_images.count >= _maxCount || _Uneditable) {
+        return CGSizeZero;
+    }
+    return ITEM_SIZE;
+}
+
+//- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section{
+//    if (_imageArray.count >= MAX_COUNT || _Uneditable) {
+//        return CGSizeZero;
+//    }
+//    return ITEM_SIZE;
+//}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+    
+    id imageObj = _images[indexPath.row];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:KSImageCollectionDidSelectImageNotifition object:imageObj userInfo:@{@"index":@(indexPath.row)}];
+    
+    if (_target && [_target respondsToSelector:@selector(ks_imageCollection:DidSelectImage:atIndex:)]) {
+        [_target ks_imageCollection:self DidSelectImage:imageObj atIndex:indexPath.row];
+    }
+}
+
+- (void)willDeleteImageNotifition:(NSNotification*)not{
+    
+    NSNumber* index = not.userInfo[@"index"];
+
+    id imageObj = self.images[[index unsignedIntegerValue]];
+    
+    if (_target && [_target respondsToSelector:@selector(ks_imageCollection:WillDeleteImage:atIndex:)]) {
+        [_target ks_imageCollection:self WillDeleteImage:imageObj atIndex:[index unsignedIntegerValue]];
+    }
+    
+    [self.images removeObjectAtIndex:[index integerValue]];
+    [self reloadData];
+}
+
+- (void)shouldAddImageNotifition:(NSNotification*)not{
+    if (_target && [_target respondsToSelector:@selector(ks_imageCollection:ShouldAddImageAtIndex:)]) {
+        [_target ks_imageCollection:self ShouldAddImageAtIndex:self.images.count - 1];
+    }
+}
+
+
+- (void)setImageArray:(NSArray *)array{
+    [self.images removeAllObjects];
+    [self addImageArray:array];
+}
+- (void)setImage:(id)image{
+    [self.images removeAllObjects];
+    [self addImageArray:@[image]];
+}
+- (void)setImageModelArray:(NSArray *)array property:(NSString *)property{
+    [self.images removeAllObjects];
+    [self addImageModelArray:array property:property];
+}
+
+- (void)addImage:(id)image{
+    [self.images addObject:image];
+    [self reloadData];
+}
+- (void)addImageArray:(NSArray *)array{
+    [self.images addObjectsFromArray:array];
+    [self reloadData];
+}
+- (void)addImageModelArray:(NSArray *)array property:(NSString *)property{
+    [self addImageArray:[array valueForKeyPath:property]];
+}
+
+- (void)insertImage:(id)image atIndex:(NSUInteger)index{
+    [self.images insertObject:image atIndex:index];
+    [self reloadData];
+}
+- (void)insertImageArray:(NSArray *)array atIndex:(NSUInteger)index{
+    [self.images insertObjects:array atIndexes:[NSIndexSet indexSetWithIndex:index]];
+    [self reloadData];
+}
+- (void)insertImageModelArray:(NSArray *)array property:(NSString *)property atIndex:(NSUInteger)index{
+    [self.images insertObjects:[array valueForKeyPath:property] atIndexes:[NSIndexSet indexSetWithIndex:index]];
+    [self reloadData];
+}
+
+- (void)removeAllImages{
+    [self.images removeAllObjects];
+    [self reloadData];
+}
+
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 @end
 
 
