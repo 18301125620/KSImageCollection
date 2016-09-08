@@ -24,6 +24,7 @@
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.imageCollection = [[KSImageCollection alloc] init];
         self.imageCollection.maxCount = 100;
+//        self.imageCollection.editing = YES;
         [self.contentView addSubview:self.imageCollection];
     }
     

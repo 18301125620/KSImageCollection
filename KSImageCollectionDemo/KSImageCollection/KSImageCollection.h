@@ -3,7 +3,7 @@
 //  MarryMe
 //
 //  Created by kong on 16/6/22.
-//  Copyright © 2016年 XiaoFanChuan. All rights reserved.
+//  Copyright © 2016年 孔令硕. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -12,9 +12,9 @@
 @protocol KSImageCollectionDelegate <NSObject>
 
 @optional
-- (void)ks_imageCollection:(KSImageCollection*)imageCollection WillDeleteImage:(id)imageObj atIndex:(NSUInteger)index;
-- (void)ks_imageCollection:(KSImageCollection*)imageCollection DidSelectImage:(id)imageObj atIndex:(NSUInteger)index;
-- (void)ks_imageCollection:(KSImageCollection*)imageCollection ShouldAddImageAtIndex:(NSUInteger)index;
+- (void)ks_imageCollection:(KSImageCollection*)imageCollection willDeleteImage:(id)imageObj atIndex:(NSUInteger)index;
+- (void)ks_imageCollection:(KSImageCollection*)imageCollection didSelectImage:(id)imageObj atIndex:(NSUInteger)index;
+- (void)ks_imageCollection:(KSImageCollection*)imageCollection shouldAddImageAtIndex:(NSUInteger)index;
 
 @end
 
@@ -23,8 +23,8 @@
 /** 支持UIImage,NSString类型 */
 @property (nonatomic,strong,readonly) NSMutableArray* images;
 
-/** 是否不可编辑 删除、添加图片 默认NO */
-@property (nonatomic,assign) IBInspectable BOOL Uneditable;
+/** 是否可编辑 删除、添加图片 默认NO */
+@property (nonatomic,assign) IBInspectable BOOL editing;
 /** 最大图片张数 */
 @property (nonatomic,assign) IBInspectable NSUInteger maxCount;
 /** 代理对象*/
@@ -56,12 +56,3 @@
 
 @end
 
-/** 慎用通知 */
-extern NSString* const KSImageCollectionWillDeleteImageNotifition;
-extern NSString* const KSImageCollectionDidSelectImageNotifition;
-extern NSString* const KSImageCollectionShouldAddImageNotifition;
-
-/** 上传图片按钮背景图片名字 */
-static NSString* const KSImageCollectAdd = @"KSImageCollectAdd";
-/** 删除图片按钮图片名字 */
-static NSString* const KSImageCollectRemove = @"KSImageCollectRemove";

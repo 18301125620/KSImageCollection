@@ -31,6 +31,9 @@
 		FC6EECEA1D7FEA9300CC2A50 /* UIImageView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = FC6EECD91D7FEA9300CC2A50 /* UIImageView+WebCache.m */; };
 		FC6EECEB1D7FEA9300CC2A50 /* UIView+WebCacheOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = FC6EECDB1D7FEA9300CC2A50 /* UIView+WebCacheOperation.m */; };
 		FC6EECEE1D7FED4800CC2A50 /* KSTableViewCell1.m in Sources */ = {isa = PBXBuildFile; fileRef = FC6EECED1D7FED4800CC2A50 /* KSTableViewCell1.m */; };
+		FC6EECF11D81208600CC2A50 /* KSImageCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FC6EECF01D81208600CC2A50 /* KSImageCollectionCell.m */; };
+		FC6EECF41D81216400CC2A50 /* KSImageCollectionFooterHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = FC6EECF31D81216400CC2A50 /* KSImageCollectionFooterHeader.m */; };
+		FC6EECF81D8123A700CC2A50 /* KSImageCollection.bundle in Resources */ = {isa = PBXBuildFile; fileRef = FC6EECF71D8123A700CC2A50 /* KSImageCollection.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -81,6 +84,11 @@
 		FC6EECDB1D7FEA9300CC2A50 /* UIView+WebCacheOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+WebCacheOperation.m"; sourceTree = "<group>"; };
 		FC6EECEC1D7FED4800CC2A50 /* KSTableViewCell1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSTableViewCell1.h; sourceTree = "<group>"; };
 		FC6EECED1D7FED4800CC2A50 /* KSTableViewCell1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSTableViewCell1.m; sourceTree = "<group>"; };
+		FC6EECEF1D81208600CC2A50 /* KSImageCollectionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSImageCollectionCell.h; sourceTree = "<group>"; };
+		FC6EECF01D81208600CC2A50 /* KSImageCollectionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSImageCollectionCell.m; sourceTree = "<group>"; };
+		FC6EECF21D81216400CC2A50 /* KSImageCollectionFooterHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSImageCollectionFooterHeader.h; sourceTree = "<group>"; };
+		FC6EECF31D81216400CC2A50 /* KSImageCollectionFooterHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSImageCollectionFooterHeader.m; sourceTree = "<group>"; };
+		FC6EECF71D8123A700CC2A50 /* KSImageCollection.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = KSImageCollection.bundle; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,8 +149,13 @@
 		FC6EECB51D7FD4FE00CC2A50 /* KSImageCollection */ = {
 			isa = PBXGroup;
 			children = (
+				FC6EECF71D8123A700CC2A50 /* KSImageCollection.bundle */,
 				FC6EECB61D7FD4FE00CC2A50 /* KSImageCollection.h */,
 				FC6EECB71D7FD4FE00CC2A50 /* KSImageCollection.m */,
+				FC6EECEF1D81208600CC2A50 /* KSImageCollectionCell.h */,
+				FC6EECF01D81208600CC2A50 /* KSImageCollectionCell.m */,
+				FC6EECF21D81216400CC2A50 /* KSImageCollectionFooterHeader.h */,
+				FC6EECF31D81216400CC2A50 /* KSImageCollectionFooterHeader.m */,
 			);
 			path = KSImageCollection;
 			sourceTree = "<group>";
@@ -246,6 +259,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FC6EECAE1D7FD47B00CC2A50 /* LaunchScreen.storyboard in Resources */,
+				FC6EECF81D8123A700CC2A50 /* KSImageCollection.bundle in Resources */,
 				FC6EECAB1D7FD47B00CC2A50 /* Assets.xcassets in Resources */,
 				FC6EECA91D7FD47B00CC2A50 /* Main.storyboard in Resources */,
 			);
@@ -268,9 +282,11 @@
 				FC6EECA31D7FD47B00CC2A50 /* AppDelegate.m in Sources */,
 				FC6EECA01D7FD47B00CC2A50 /* main.m in Sources */,
 				FC6EECE81D7FEA9300CC2A50 /* UIImage+WebP.m in Sources */,
+				FC6EECF41D81216400CC2A50 /* KSImageCollectionFooterHeader.m in Sources */,
 				FC6EECEA1D7FEA9300CC2A50 /* UIImageView+WebCache.m in Sources */,
 				FC6EECE11D7FEA9300CC2A50 /* SDWebImageDownloader.m in Sources */,
 				FC6EECEB1D7FEA9300CC2A50 /* UIView+WebCacheOperation.m in Sources */,
+				FC6EECF11D81208600CC2A50 /* KSImageCollectionCell.m in Sources */,
 				FC6EECE51D7FEA9300CC2A50 /* UIButton+WebCache.m in Sources */,
 				FC6EECDC1D7FEA9300CC2A50 /* MKAnnotationView+WebCache.m in Sources */,
 				FC6EECEE1D7FED4800CC2A50 /* KSTableViewCell1.m in Sources */,
@@ -397,6 +413,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.xianhe.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "cadf4594-d0d1-4d3c-bc9f-4daf3209fc8b";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -411,6 +428,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.xianhe.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "cadf4594-d0d1-4d3c-bc9f-4daf3209fc8b";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -433,6 +451,7 @@
 				FC6EECB41D7FD47B00CC2A50 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
