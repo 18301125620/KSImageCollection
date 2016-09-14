@@ -9,6 +9,12 @@
 #import <UIKit/UIKit.h>
 
 @class KSImageCollection;
+
+typedef enum : NSUInteger {
+    KSImageCollectionOrientationBack = 0,
+    KSImageCollectionOrientationForward,
+} KSImageCollectionOrientation;
+
 @protocol KSImageCollectionDelegate <NSObject>
 
 @optional
@@ -28,7 +34,9 @@
 /** 最大图片张数 */
 @property (nonatomic,assign) IBInspectable NSUInteger maxCount;
 /** 代理对象*/
-@property (nonatomic,assign) id<KSImageCollectionDelegate> target;
+@property (nonatomic,weak) IBOutlet id<KSImageCollectionDelegate> target;
+/** 添加图片按钮的位置 默认KSImageCollectionOrientationBack*/
+@property (nonatomic,assign) IBInspectable KSImageCollectionOrientation orientation;
 
 /** 初始化一个图片数组，类型可以为自定义类型，需要指定Image的属性*/
 - (void)setImageModelArray:(NSArray*)array property:(NSString*)property;

@@ -98,15 +98,15 @@
     return ITEM_SIZE;
 }
 
-//- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section{
-//    if (_images.count >= _maxCount || _unEditable) {
-//        return CGSizeZero;
-//    }
-//    return ITEM_SIZE;
-//}
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section{
+    if (_images.count >= _maxCount || (!_editing) || _orientation == KSImageCollectionOrientationBack) {
+        return CGSizeZero;
+    }
+    return ITEM_SIZE;
+}
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section{
-    if (_images.count >= _maxCount || (!_editing)) {
+    if (_images.count >= _maxCount || (!_editing) || _orientation == KSImageCollectionOrientationForward) {
         return CGSizeZero;
     }
     return ITEM_SIZE;
@@ -167,7 +167,7 @@
 
 - (void)insertImage:(id)image atIndex:(NSUInteger)index{
     [self.images insertObject:image atIndex:index];
-//    [self insertItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:index inSection:0]]];
+
     [self reloadData];
 }
 - (void)insertImageArray:(NSArray *)array atIndex:(NSUInteger)index{
