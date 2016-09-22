@@ -39,10 +39,9 @@
 }
 
 - (void)awakeFromNib{
-    
+    [super awakeFromNib];
     self.collectionViewLayout = self.layout;
     [self setupSubviews];
-    
 }
 
 - (UICollectionViewFlowLayout*)layout{
@@ -72,13 +71,20 @@
 
 #pragma mark- UICollectionViewDelegate
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
+    if ((!_editing) && _showNone) {
+        return MAX(self.images.count, 1);   //非编辑并且显示无图片
+    }
     return self.images.count;
 }
 
 - (UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     KSImageCollectionCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"KSImageCollectionCell" forIndexPath:indexPath];
     cell.delegate = self;
-    cell.imageObject = _images[indexPath.row];
+    if ((!_editing) && _showNone && _images.count == 0) {
+        cell.imageObject = [UIImage imageNamed:@"KSImageCollection.bundle/KSImageCollectNone"];
+    }else{
+        cell.imageObject = _images[indexPath.row];
+    }
     cell.editing = _editing;
     return cell;
 }
@@ -114,8 +120,12 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     
+    if ((!_editing) && _showNone && _images.count == 0) {
+        return; //点击未添加图片
+    }
+    
     id imageObj = _images[indexPath.row];
-        
+    
     if (_target && [_target respondsToSelector:@selector(ks_imageCollection:didSelectImage:atIndex:)]) {
         [_target ks_imageCollection:self didSelectImage:imageObj atIndex:indexPath.row];
     }
